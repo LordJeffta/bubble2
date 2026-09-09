@@ -78,9 +78,22 @@ public final class Utils {
         return value;
     }
 
-    public static int dpToPx(Context context, int dp) {
+    public static int dpToPx(Context context, float dp) {
+        return unitToPx(context, TypedValue.COMPLEX_UNIT_DIP, dp);
+    }
+
+    /**
+     * calculate a pixel value depending on device display density
+     *
+     * @param context
+     * @param unit    , a constant from TypedValue e.g TypedValue.COMPLEX_UNIT_DIP
+     * @param value
+     * @return
+     */
+    public static int unitToPx(Context context, int unit, float value) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        return Math.round(dp * displayMetrics.density);
+        float px = TypedValue.applyDimension(unit, value, displayMetrics);
+        return Math.round(px);
     }
 
     public static int getGestureOffsetTop(View view) {
