@@ -66,6 +66,14 @@
         <item name="background">@android:color/transparent</item>
     </style>
 
+    <!--currently unused, needed for default toolbar title/subtitle -->
+    <style name="TitleTextAppearance" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="SubtitleTextAppearance" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="NavigationViewTextStyle" parent="AppThemeDayNight">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>

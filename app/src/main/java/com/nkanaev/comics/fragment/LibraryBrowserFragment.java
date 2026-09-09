@@ -60,6 +60,7 @@ public class LibraryBrowserFragment extends Fragment
         SwipeRefreshLayout.OnRefreshListener,
         UpdateHandlerTarget {
     public static final String PARAM_PATH = "browserCurrentPath";
+    private static final String STATE_SEARCH = "search_string";
 
     final int ITEM_VIEW_TYPE_COMIC = -1;
     final int ITEM_VIEW_TYPE_HEADER_RECENT = -2;
@@ -100,6 +101,9 @@ public class LibraryBrowserFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPath = getArguments().getString(PARAM_PATH);
+        // restore search value
+        if (savedInstanceState != null)
+            mFilterSearch = savedInstanceState.getString(STATE_SEARCH,"");
 
         // restore saved sorting
         try {
@@ -184,14 +188,19 @@ public class LibraryBrowserFragment extends Fragment
         super.onPause();
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_SEARCH,mFilterSearch);
+        //Log.d("Bundle",outState.toString());
+    }
+
     private Menu mFilterMenu, mSortMenu;
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
     }
-
-    SearchView mSearchView;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -204,8 +213,13 @@ public class LibraryBrowserFragment extends Fragment
         }
 
         MenuItem searchItem = menu.findItem(R.id.search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        mSearchView.setOnQueryTextListener(this);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        // restore search state
+        if (!mFilterSearch.isEmpty()) {
+            searchView.setIconified(false);
+            searchView.setQuery(mFilterSearch, true);
+        }
 
         MenuItem filterItem = menu.findItem(R.id.menu_browser_filter);
         mFilterMenu = filterItem.getSubMenu();

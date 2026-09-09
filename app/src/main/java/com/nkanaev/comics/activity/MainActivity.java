@@ -1,15 +1,21 @@
 package com.nkanaev.comics.activity;
 
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
@@ -140,13 +146,40 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        /*
+        // adapt default title/subtitle views
+        // currently unused as subtitle gets clipped on bottom for some weird reason
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextAppearance(this, R.style.TitleTextAppearance);
+        toolbar.setSubtitleTextAppearance(this, R.style.SubtitleTextAppearance);
+        try {
+            // workaround
+            final Field subtitleViewField = Toolbar.class.getDeclaredField("mSubtitleTextView");
+            subtitleViewField.setAccessible(true);
+            final TextView subtitleView = (TextView) subtitleViewField.get(toolbar);
+            subtitleView.setSingleLine(false);
+            subtitleView.setMaxLines(3);
+            //subtitleView.setHeight();
+            subtitleView.setPadding(0,0,0,Utils.dpToPx(this,1f));
+            ViewGroup.LayoutParams lp  =  subtitleView.getLayoutParams();
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            subtitleView.setLayoutParams(lp);
+            subtitleView.setLineSpacing(Utils.unitToPx(this, TypedValue.COMPLEX_UNIT_SP, 4),1);
+        } catch (Exception e) {
+            Log.e("sbutitle","",e);
+        }
+        */
+    }
+
     public Toolbar getToolbar(){
         return findViewById(R.id.toolbar);
     }
 
     @Override
     public void setTitle(CharSequence title) {
-        super.setTitle(title);
         TextView titleView = findViewById(R.id.action_bar_title);
         if (titleView!=null)
             titleView.setText(title);
@@ -156,8 +189,10 @@ public class MainActivity extends AppCompatActivity
 
     public void setSubTitle(CharSequence title) {
         TextView subtitle = (TextView) findViewById(R.id.action_bar_subtitle);
-        if (subtitle==null)
+        if (subtitle==null) {
+            getSupportActionBar().setSubtitle(title);
             return;
+        }
 
         if (title==null||title.toString().isEmpty()) {
             subtitle.setVisibility(View.GONE);
@@ -179,12 +214,35 @@ public class MainActivity extends AppCompatActivity
         outState.putInt(STATE_CURRENT_MENU_ITEM, mCurrentNavItem);
         outState.putBoolean(STATE_INITIAL_SCAN_RAN_ALREADY, mInitialLibraryScanRanAlready);
         super.onSaveInstanceState(outState);
+        Log.d("Bundle_Activity",outState.toString());
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // customize search item if set in menu
+        MenuItem searchItem = menu.findItem(R.id.search);
+        if (searchItem != null) {
+            // fix software keyboard fills screen in landscape
+            SearchView search = (SearchView) searchItem.getActionView();
+            int options = search.getImeOptions();
+            search.setImeOptions(options | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            // fix icon appearance
+            ImageView icon = search.findViewById(androidx.appcompat.R.id.search_button);
+            if (icon != null) {
+                // color icon white, remove greyish tint
+                icon.setColorFilter(0xFFFFFFFF, PorterDuff.Mode.SRC_IN);
+                // replace icon if wanted
+                //icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
+            }
+        }
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public Picasso getPicasso() {

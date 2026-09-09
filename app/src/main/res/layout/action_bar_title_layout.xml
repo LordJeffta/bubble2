@@ -19,10 +19,9 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:gravity="fill_horizontal"
-                android:singleLine="false"
+                android:singleLine="true"
                 android:scrollHorizontally="false"
-
-                android:ellipsize="none"
+                android:ellipsize="end"
                 android:lineBreakStyle="none"
                 android:lineBreakWordStyle="none"
                 android:textSize="20sp"
@@ -30,6 +29,8 @@
 <!--
     </HorizontalScrollView>
 -->
+        <!-- we need to limit maxLines so titles when crushed on narrow screens
+             by expanded search field will not expand the toolbar height limitlessly -->
         <TextView
             android:id="@+id/action_bar_subtitle"
             android:layout_height="wrap_content"
@@ -39,5 +40,7 @@
             android:scrollHorizontally="false"
             android:textSize="12sp"
             android:text="Subtitle"
+            android:maxLines="2"
+            android:ellipsize="start"
             android:visibility="visible"/>
 </LinearLayout>
